@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "deploy": "npm run build && git add dist && git commit -m 'Deploy to GitHub Pages' && git subtree push --prefix dist origin gh-pages",
+    "deploy": "git branch -D gh-pages || true && npm run build && git add -f dist && git commit -m 'Deploy to GitHub Pages' && git subtree split --prefix dist -b gh-pages && git push -f origin gh-pages:gh-pages && git branch -D gh-pages",
     "deploy:staging": "npm run build && vercel"
   },
   "dependencies": {
