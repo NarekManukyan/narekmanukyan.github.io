@@ -11,6 +11,23 @@
   ],
   "routes": [
     {
+      "src": "/google157bcc559c733920.html",
+      "headers": {
+        "content-type": "text/html"
+      },
+      "dest": "/google157bcc559c733920.html"
+    },
+    {
+      "src": "/assets/(.*)",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      },
+      "continue": true
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
