@@ -18,7 +18,7 @@ const Experience = () => {
             'Optimizing performance for low-latency audio processing',
             'Integrating with native audio APIs'
           ],
-          technologies: ['Flutter', 'Dart', 'MobX', 'Native Audio APIs', 'WebRTC']
+          technologies: ['Flutter', 'Dart', 'MobX', 'Native Audio/Video APIs']
         },
         {
           name: 'Viveo Health',
