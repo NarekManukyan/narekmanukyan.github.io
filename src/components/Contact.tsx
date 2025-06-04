@@ -149,7 +149,7 @@ export default function Contact() {
               <a
                 href="/CV_Narek_Manukyan.pdf"
                 download
-                className="w-full max-w-sm flex justify-center items-center px-7 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                className="w-full max-w-sm flex justify-center items-center px-7 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 animate-gradient-x hover:from-purple-600 hover:to-blue-600 text-white rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-label="Download CV">
                   <title>Download CV</title>
