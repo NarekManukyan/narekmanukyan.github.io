@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface NavbarProps {
   activeSection: string
@@ -6,6 +6,7 @@ interface NavbarProps {
 }
 
 const Navbar = ({ activeSection, setActiveSection }: NavbarProps) => {
+  const [menuOpen, setMenuOpen] = useState(false)
   const sections = ['home', 'about', 'experience', 'skills', 'contact']
 
   useEffect(() => {
@@ -35,6 +36,7 @@ const Navbar = ({ activeSection, setActiveSection }: NavbarProps) => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="text-xl font-bold">Narek Manukyan</div>
+          {/* Desktop Nav */}
           <div className="hidden md:flex space-x-6">
             {sections.map((section) => (
               <a
@@ -45,12 +47,54 @@ const Navbar = ({ activeSection, setActiveSection }: NavbarProps) => {
                     ? 'text-blue-400'
                     : 'text-gray-300 hover:text-white'
                 }`}
+                aria-label={`Go to ${section} section`}
               >
                 {section}
               </a>
             ))}
           </div>
+          {/* Hamburger for mobile */}
+          <button
+            className="md:hidden flex items-center justify-center p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <svg
+              className="w-7 h-7 text-white"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              {menuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
+        {/* Mobile Menu */}
+        {menuOpen && (
+          <div className="md:hidden bg-gray-900/95 rounded-b-xl shadow-lg py-4 px-6 flex flex-col space-y-4 animate-fade-in-down">
+            {sections.map((section) => (
+              <a
+                key={section}
+                href={`#${section}`}
+                className={`capitalize text-lg font-medium transition-colors duration-200 ${
+                  activeSection === section
+                    ? 'text-blue-400'
+                    : 'text-gray-300 hover:text-white'
+                }`}
+                aria-label={`Go to ${section} section`}
+                onClick={() => setMenuOpen(false)}
+              >
+                {section}
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     </nav>
   )

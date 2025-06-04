@@ -143,7 +143,7 @@ const Hero = () => {
 
                 {/* Hexagon Grid with Glow */}
                 <div className="absolute inset-0 opacity-10 mix-blend-lighten">
-                  <svg width="100%" height="100%" className="text-gray-400">
+                  <svg width="100%" height="100%" className="text-gray-400" aria-hidden="true">
                     <defs>
                       <linearGradient id="grid-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stopColor="rgba(96,165,250,0.3)" />
@@ -168,7 +168,7 @@ const Hero = () => {
               <div className="absolute inset-0 overflow-hidden backdrop-blur-[2px]">
                 {/* Flutter Logo */}
                 <div className="absolute top-8 left-8 w-16 h-16 animate-float opacity-80">
-                  <svg viewBox="-30.5 0 317 317" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid" className="w-full h-full">
+                  <svg viewBox="-30.5 0 317 317" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid" className="w-full h-full" aria-label="Flutter logo"><title>Flutter logo</title>
                     <defs>
                       <linearGradient x1="3.9517088%" y1="26.9930287%" x2="75.8970734%" y2="52.9192657%" id="linearGradient-1">
                         <stop stopColor="#000000" offset="0%"></stop>
@@ -187,7 +187,7 @@ const Hero = () => {
 
                 {/* One Planet Summit Icon */}
                 <div className="absolute top-20 right-24 w-14 h-14 animate-float-slower opacity-60">
-                  <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="One Planet Summit icon"><title>One Planet Summit icon</title>
                     <circle cx="12" cy="12" r="10" fill="#34D399" fillOpacity="0.2"/>
                     <path fill="#34D399" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l7 4.5-7 4.5z"/>
                   </svg>
@@ -195,7 +195,7 @@ const Hero = () => {
 
                 {/* HR Drone Icon */}
                 <div className="absolute top-36 left-20 w-12 h-12 animate-float opacity-70">
-                  <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="HR Drone icon"><title>HR Drone icon</title>
                     <rect width="24" height="24" rx="6" fill="#6366F1" fillOpacity="0.2"/>
                     <path fill="#6366F1" d="M12 2L4 7v10l8 5 8-5V7l-8-5zm0 4l4 2.5v5L12 16l-4-2.5v-5L12 6z"/>
                   </svg>
@@ -203,7 +203,7 @@ const Hero = () => {
 
                 {/* Bitsgap Icon */}
                 <div className="absolute bottom-32 right-16 w-16 h-16 animate-float-slow opacity-75">
-                  <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="Bitsgap icon"><title>Bitsgap icon</title>
                     <path fill="#3B82F6" fillOpacity="0.2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
                     <path fill="#3B82F6" d="M16.5 12l-2.25 2.25L12 16.5l-2.25-2.25L7.5 12l2.25-2.25L12 7.5l2.25 2.25L16.5 12zm-4.5 0L12 9.75 13.25 12 12 14.25 11.5 12z"/>
                   </svg>
@@ -211,7 +211,7 @@ const Hero = () => {
 
                 {/* Krisp Logo */}
                 <div className="absolute top-12 right-12 w-12 h-12 animate-float-slow opacity-60">
-                  <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="Krisp logo"><title>Krisp logo</title>
                     <path fill="#4A90E2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
                     <path fill="#4A90E2" d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
                   </svg>
@@ -219,7 +219,7 @@ const Hero = () => {
 
                 {/* Story Maker Icon */}
                 <div className="absolute top-40 right-1/3 w-14 h-14 animate-float-slower opacity-50">
-                  <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="Story Maker icon"><title>Story Maker icon</title>
                     <path fill="#6C63FF" d="M21 17V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4.5c.5 0 1 .5 1 1s.5 1 1 1h1c.5 0 1-.5 1-1s.5-1 1-1H19a2 2 0 0 0 2-2z"/>
                     <circle cx="12" cy="10" r="3" fill="#FFF"/>
                   </svg>
@@ -227,32 +227,32 @@ const Hero = () => {
 
                 {/* Hydrated MobX Icon */}
                 <div className="absolute bottom-20 right-1/4 w-10 h-10 animate-float opacity-70">
-                  <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="Hydrated MobX icon"><title>Hydrated MobX icon</title>
                     <path fill="#FF9800" d="M17.66 9.53l-7.07 7.07-4.24-4.24 1.41-1.41 2.83 2.83 5.66-5.66 1.41 1.41zM4 12c0-4.42 3.58-8 8-8s8 3.58 8 8-3.58 8-8 8-8-3.58-8-8zm2 0c0 3.31 2.69 6 6 6s6-2.69 6-6-2.69-6-6-6-6 2.69-6 6z"/>
                   </svg>
                 </div>
 
                 {/* Flutter Rust Bridge Icon */}
                 <div className="absolute bottom-24 left-16 w-12 h-12 animate-float-slow opacity-60">
-                  <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="Flutter Rust Bridge icon"><title>Flutter Rust Bridge icon</title>
                     <path fill="#DEA584" d="M12 2L2 19h20L12 2zm0 4l6.5 11h-13L12 6z"/>
                   </svg>
                 </div>
 
                 {/* Additional Blurred Icons */}
                 <div className="absolute top-1/4 left-1/2 w-20 h-20 -translate-x-1/2 opacity-30 blur-sm">
-                  <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" aria-hidden="true">
                     <circle cx="12" cy="12" r="10" fill="none" stroke="#60A5FA" strokeWidth="1"/>
                     <path d="M12 6v12M6 12h12" stroke="#60A5FA" strokeWidth="1"/>
                   </svg>
                 </div>
                 <div className="absolute bottom-1/3 right-1/4 w-16 h-16 opacity-20 blur-sm animate-float-slower">
-                  <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" aria-hidden="true">
                     <path d="M12 2L2 19h20L12 2z" fill="none" stroke="#A78BFA" strokeWidth="1"/>
                   </svg>
                 </div>
                 <div className="absolute top-1/3 right-1/5 w-24 h-24 opacity-25 blur-sm animate-float-slow">
-                  <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" aria-hidden="true">
                     <rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="#34D399" strokeWidth="1"/>
                     <circle cx="12" cy="12" r="4" fill="none" stroke="#34D399" strokeWidth="1"/>
                   </svg>
@@ -305,7 +305,7 @@ const Hero = () => {
                   {/* App Bar */}
                   <div className="mt-2 px-3 h-8 flex items-center">
                     <div className="w-6 h-6 rounded-full bg-blue-500/30 flex items-center justify-center">
-                      <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-blue-400">
+                      <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-blue-400" aria-label="Flutter app icon"><title>Flutter app icon</title>
                         <path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
                       </svg>
                     </div>
