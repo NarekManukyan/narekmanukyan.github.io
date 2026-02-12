@@ -1,64 +1,132 @@
-const Projects = () => {
-  const githubRepos = [
-    {
-      name: 'flutter_rust_bridge',
-      description: 'High-level memory-safe binding generator for Flutter/Dart <-> Rust',
-      stars: 2300,
-      forks: 150,
-      language: 'Rust',
-      url: 'https://github.com/fzyzcjy/flutter_rust_bridge',
-      contribution: 'Contributed to core functionality and documentation'
-    },
-    {
-      name: 'flutter_rust_bridge_template',
-      description: 'Template for Flutter + Rust integration using flutter_rust_bridge',
-      stars: 500,
-      forks: 80,
-      language: 'Dart',
-      url: 'https://github.com/fzyzcjy/flutter_rust_bridge_template',
-      contribution: 'Maintained and improved template structure'
-    },
-    {
-      name: 'mobx.dart',
-      description: 'MobX for the Dart language. Hassle-free, reactive state-management for your Dart and Flutter apps.',
-      stars: 1200,
-      forks: 200,
-      language: 'Dart',
-      url: 'https://github.com/mobxjs/mobx.dart',
-      contribution: 'Contributed to state management improvements'
-    }
-  ]
+import { useState, useEffect } from 'react'
 
-  const pubPackages = [
-    {
-      name: 'story_maker',
-      description: 'A Flutter package for creating Instagram-like stories with text overlay and gradient backgrounds',
-      likes: 67,
-      points: 140,
-      downloads: 163,
-      url: 'https://pub.dev/packages/story_maker',
-      features: [
-        'Image scaling and positioning',
-        'Text overlay with custom styling',
-        'Gradient background support',
-        'Story-ready image export'
-      ]
-    },
-    {
-      name: 'hydrated_mobx',
-      description: 'Hydrated MobX for Flutter - Automatic state persistence for MobX stores',
-      likes: 6,
-      points: 160,
-      downloads: 176,
-      url: 'https://pub.dev/packages/hydrated_mobx',
-      features: [
-        'Automatic state persistence',
-        'Secure storage support',
-        'Cross-platform compatibility',
-        'Efficient storage using Hive'
-      ]
+const GITHUB_USERNAME = 'narekmanukyan'
+const PUB_PUBLISHER = 'narek-manukyan.dev'
+
+const PUB_API_BASE = import.meta.env.DEV ? '/api/pub' : 'https://pub.dev/api'
+
+type GithubRepo = {
+  name: string
+  description: string
+  stars: number
+  forks: number
+  language: string
+  url: string
+  contribution?: string
+}
+
+type PubPackage = {
+  name: string
+  description: string
+  likes: number
+  points: number
+  downloads: number
+  url: string
+  features: string[]
+}
+
+const Projects = () => {
+  const [githubRepos, setGithubRepos] = useState<GithubRepo[]>([])
+  const [pubPackages, setPubPackages] = useState<PubPackage[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchGithub = async () => {
+      const query = `
+        query($login: String!) {
+          user(login: $login) {
+            pinnedItems(first: 6, types: REPOSITORY) {
+              nodes {
+                ... on Repository {
+                  name
+                  description
+                  stargazers { totalCount }
+                  forkCount
+                  primaryLanguage { name }
+                  url
+                }
+              }
+            }
+          }
+        }
+      `
+      const token = import.meta.env.VITE_GITHUB_TOKEN
+      const graphqlRes = await fetch('https://api.github.com/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ query, variables: { login: GITHUB_USERNAME } })
+      })
+      const json = await graphqlRes.json() as { data?: { user?: { pinnedItems?: { nodes?: Array<{ name: string; description: string | null; stargazers: { totalCount: number }; forkCount: number; primaryLanguage: { name: string } | null; url: string }> } } }; errors?: unknown[] }
+      if (graphqlRes.ok && !json.errors?.length && json.data?.user?.pinnedItems?.nodes?.length) {
+        const repos: GithubRepo[] = json.data.user.pinnedItems.nodes
+          .filter((n): n is NonNullable<typeof n> => n != null)
+          .map((r) => ({
+            name: r.name,
+            description: r.description ?? r.name,
+            stars: r.stargazers?.totalCount ?? 0,
+            forks: r.forkCount ?? 0,
+            language: r.primaryLanguage?.name ?? '-',
+            url: r.url
+          }))
+        setGithubRepos(repos)
+        return
+      }
+      const restRes = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100`)
+      if (!restRes.ok) return
+      const data: { fork: boolean; name: string; description: string | null; stargazers_count: number; forks_count: number; language: string | null; html_url: string }[] = await restRes.json()
+      const repos: GithubRepo[] = data
+        .filter((r) => !r.fork)
+        .sort((a, b) => (b.stargazers_count ?? 0) - (a.stargazers_count ?? 0))
+        .slice(0, 6)
+        .map((r) => ({
+          name: r.name,
+          description: r.description ?? r.name,
+          stars: r.stargazers_count ?? 0,
+          forks: r.forks_count ?? 0,
+          language: r.language ?? '-',
+          url: r.html_url
+        }))
+      setGithubRepos(repos)
     }
-  ]
+
+    const fetchPub = async () => {
+      const searchRes = await fetch(`${PUB_API_BASE}/search?q=publisher:${encodeURIComponent(PUB_PUBLISHER)}`)
+      if (!searchRes.ok) return
+      const search = await searchRes.json() as { packages?: { package: string }[] }
+      const names = (search.packages ?? []).map((p) => p.package)
+      if (names.length === 0) return
+      const results = await Promise.allSettled(
+        names.map(async (name) => {
+          const [pkgRes, scoreRes] = await Promise.all([
+            fetch(`${PUB_API_BASE}/packages/${name}`),
+            fetch(`${PUB_API_BASE}/packages/${name}/score`)
+          ])
+          if (!pkgRes.ok || !scoreRes.ok) return null
+          const pkg = await pkgRes.json()
+          const score = await scoreRes.json()
+          const description = pkg?.latest?.pubspec?.description ?? name
+          return {
+            name,
+            description,
+            likes: score.likeCount ?? 0,
+            points: score.grantedPoints ?? 0,
+            downloads: score.downloadCount30Days ?? 0,
+            url: `https://pub.dev/packages/${name}`,
+            features: [] as string[]
+          } as PubPackage
+        })
+      )
+      const packages = results
+        .filter((r): r is PromiseFulfilledResult<PubPackage | null> => r.status === 'fulfilled' && r.value != null)
+        .map((r) => r.value as PubPackage)
+      if (packages.length) setPubPackages(packages)
+    }
+
+    Promise.all([fetchGithub(), fetchPub()]).finally(() => setLoading(false))
+  }, [])
 
   return (
     <section id="projects" className="py-20 relative overflow-hidden">
@@ -77,28 +145,33 @@ const Projects = () => {
             GitHub Repositories
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {githubRepos.map((repo, index) => (
+            {loading && githubRepos.length === 0 ? (
+              <p className="text-gray-400 col-span-full">Loading repositories…</p>
+            ) : (
+            githubRepos.map((repo) => (
               <div
-                key={index}
+                key={repo.url}
                 className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-700/50 hover:border-blue-500/50"
               >
                 <h4 className="text-xl font-semibold text-blue-400 mb-2">{repo.name}</h4>
                 <p className="text-gray-300 mb-4">{repo.description}</p>
-                <p className="text-sm text-gray-400 mb-4">{repo.contribution}</p>
+                {repo.contribution != null && repo.contribution !== '' && (
+                  <p className="text-sm text-gray-400 mb-4">{repo.contribution}</p>
+                )}
                 <div className="flex flex-wrap gap-4 mb-4">
                   <span className="flex items-center text-sm text-gray-300">
                     <svg className="w-4 h-4 mr-1 text-yellow-400" fill="currentColor" viewBox="0 0 24 24" aria-label="Star icon">
                       <title>Star icon</title>
                       <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/>
                     </svg>
-                    {repo.stars}
+                    {repo.stars.toLocaleString()}
                   </span>
                   <span className="flex items-center text-sm text-gray-300">
                     <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" aria-label="Fork icon">
                       <title>Fork icon</title>
                       <path d="M7 5C7 3.89543 7.89543 3 9 3C10.1046 3 11 3.89543 11 5C11 5.74028 10.5978 6.38663 10 6.73244V14.0396H11.7915C12.8961 14.0396 13.7915 13.1441 13.7915 12.0396V10.7838C13.1823 10.4411 12.7708 9.78837 12.7708 9.03955C12.7708 7.93498 13.6662 7.03955 14.7708 7.03955C15.8753 7.03955 16.7708 7.93498 16.7708 9.03955C16.7708 9.77123 16.3778 10.4111 15.7915 10.7598V12.0396C15.7915 14.2487 14.0006 16.0396 11.7915 16.0396H10V17.2676C10.5978 17.6134 11 18.2597 11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 18.2597 7.4022 17.6134 8 17.2676V6.73244C7.4022 6.38663 7 5.74028 7 5Z" />
                     </svg>
-                    {repo.forks}
+                    {repo.forks.toLocaleString()}
                   </span>
                   <span className="text-sm text-gray-300">{repo.language}</span>
                 </div>
@@ -115,7 +188,8 @@ const Projects = () => {
                   </svg>
                 </a>
               </div>
-            ))}
+            ))
+            )}
           </div>
         </div>
 
@@ -139,9 +213,12 @@ const Projects = () => {
             Pub.dev Packages
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {pubPackages.map((pkg, index) => (
+            {loading && pubPackages.length === 0 ? (
+              <p className="text-gray-400 col-span-full">Loading packages…</p>
+            ) : (
+            pubPackages.map((pkg) => (
               <div
-                key={index}
+                key={pkg.url}
                 className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-700/50 hover:border-blue-500/50"
               >
                 <h4 className="text-xl font-semibold text-blue-400 mb-2">{pkg.name}</h4>
@@ -151,19 +228,21 @@ const Projects = () => {
                     <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24" aria-label="Like icon">
                       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
-                    {pkg.likes} likes
+                    {pkg.likes.toLocaleString()} likes
                   </span>
                   <span className="text-sm text-gray-300">{pkg.points} points</span>
-                  <span className="text-sm text-gray-300">{pkg.downloads} downloads</span>
+                  <span className="text-sm text-gray-300">{pkg.downloads.toLocaleString()} downloads (30d)</span>
                 </div>
-                <div className="mb-4">
-                  <h5 className="text-sm font-semibold text-gray-400 mb-2">Key Features:</h5>
-                  <ul className="list-disc list-inside text-gray-300 space-y-1">
-                    {pkg.features.map((feature, fIndex) => (
-                      <li key={fIndex}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
+                {pkg.features.length > 0 && (
+                  <div className="mb-4">
+                    <h5 className="text-sm font-semibold text-gray-400 mb-2">Key Features:</h5>
+                    <ul className="list-disc list-inside text-gray-300 space-y-1">
+                      {pkg.features.map((feature, fIndex) => (
+                        <li key={fIndex}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <a
                   href={pkg.url}
                   target="_blank"
@@ -176,7 +255,8 @@ const Projects = () => {
                   </svg>
                 </a>
               </div>
-            ))}
+            ))
+            )}
           </div>
         </div>
       </div>
