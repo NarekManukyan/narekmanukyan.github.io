@@ -3,7 +3,60 @@ import { useState, useEffect } from 'react'
 const GITHUB_USERNAME = 'narekmanukyan'
 const PUB_PUBLISHER = 'narek-manukyan.dev'
 
-const PUB_API_BASE = import.meta.env.DEV ? '/api/pub' : 'https://pub.dev/api'
+const PINNED_REPOS: GithubRepo[] = [
+  {
+    name: 'cupertino_native_plus',
+    description: 'Native Liquid Glass widgets for iOS and macOS with pixel-perfect fidelity.',
+    stars: 7,
+    forks: 7,
+    language: 'Dart',
+    url: 'https://github.com/NarekManukyan/cupertino_native_plus',
+  },
+  {
+    name: 'flutter_boilerplate',
+    description: 'A boilerplate project created in flutter using MobX and hooks.',
+    stars: 15,
+    forks: 1,
+    language: 'Dart',
+    url: 'https://github.com/NarekManukyan/flutter_boilerplate',
+  },
+  {
+    name: 'hydrated_mobx',
+    description: 'A Flutter package that automatically persists and restores MobX stores. Built to work with Flutter\'s state management solution MobX.',
+    stars: 1,
+    forks: 0,
+    language: 'Dart',
+    url: 'https://github.com/NarekManukyan/hydrated_mobx',
+  },
+  {
+    name: 'app_store_country',
+    description: 'A Flutter plugin that returns the Apple App Store storefront country code (ISO-3166 alpha-3) on iOS using StoreKit.',
+    stars: 0,
+    forks: 0,
+    language: 'Dart',
+    url: 'https://github.com/NarekManukyan/app_store_country',
+  },
+  {
+    name: 'flutter_blocknote_editor',
+    description: 'A Flutter package that embeds BlockNoteJS inside a WebView with bidirectional communication, transaction batching, and undo/redo safety.',
+    stars: 2,
+    forks: 0,
+    language: 'Dart',
+    url: 'https://github.com/NarekManukyan/flutter_blocknote_editor',
+  },
+  {
+    name: 'story_maker',
+    description: 'A package for creating instagram like story, you can use this package to edit images and make it story ready by adding other contents over it like text and gradients.',
+    stars: 7,
+    forks: 11,
+    language: 'Dart',
+    url: 'https://github.com/NarekManukyan/story_maker',
+  },
+]
+
+// /api/pub is handled by the Vite dev proxy and the Vercel route rewrite in
+// production — no environment-specific branching needed.
+const PUB_API_BASE = '/api/pub'
 
 type GithubRepo = {
   name: string
@@ -28,101 +81,144 @@ type PubPackage = {
 const Projects = () => {
   const [githubRepos, setGithubRepos] = useState<GithubRepo[]>([])
   const [pubPackages, setPubPackages] = useState<PubPackage[]>([])
+  const [pubError, setPubError] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchGithub = async () => {
-      const query = `
-        query($login: String!) {
-          user(login: $login) {
-            pinnedItems(first: 6, types: REPOSITORY) {
-              nodes {
-                ... on Repository {
-                  name
-                  description
-                  stargazers { totalCount }
-                  forkCount
-                  primaryLanguage { name }
-                  url
-                }
-              }
-            }
+      type GraphQLNode = {
+        name: string
+        description: string | null
+        stargazers: { totalCount: number }
+        forkCount: number
+        primaryLanguage: { name: string } | null
+        url: string
+      }
+      type GraphQLResponse = {
+        data?: {
+          user?: {
+            pinnedItems?: { nodes?: Array<GraphQLNode | null> }
           }
         }
-      `
-      const token = import.meta.env.VITE_GITHUB_TOKEN
-      const graphqlRes = await fetch('https://api.github.com/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ query, variables: { login: GITHUB_USERNAME } })
-      })
-      const json = await graphqlRes.json() as { data?: { user?: { pinnedItems?: { nodes?: Array<{ name: string; description: string | null; stargazers: { totalCount: number }; forkCount: number; primaryLanguage: { name: string } | null; url: string }> } } }; errors?: unknown[] }
-      if (graphqlRes.ok && !json.errors?.length && json.data?.user?.pinnedItems?.nodes?.length) {
-        const repos: GithubRepo[] = json.data.user.pinnedItems.nodes
-          .filter((n): n is NonNullable<typeof n> => n != null)
+        errors?: unknown[]
+      }
+
+      const mapNodes = (nodes: Array<GraphQLNode | null>): GithubRepo[] =>
+        nodes
+          .filter((n): n is GraphQLNode => n != null)
           .map((r) => ({
             name: r.name,
             description: r.description ?? r.name,
             stars: r.stargazers?.totalCount ?? 0,
             forks: r.forkCount ?? 0,
             language: r.primaryLanguage?.name ?? '-',
-            url: r.url
+            url: r.url,
           }))
-        setGithubRepos(repos)
-        return
+
+      // 1. Try the Vercel serverless proxy — GITHUB_TOKEN stays server-side, never exposed to client
+      try {
+        const proxyRes = await fetch('/api/github', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ login: GITHUB_USERNAME }),
+        })
+        if (proxyRes.ok) {
+          const json = await proxyRes.json() as GraphQLResponse
+          const nodes = json.data?.user?.pinnedItems?.nodes
+          if (!json.errors?.length && nodes?.length) {
+            setGithubRepos(mapNodes(nodes))
+            return
+          }
+        }
+      } catch {
+        // proxy unavailable (e.g. plain `vite dev` without `vercel dev`) — fall through
       }
-      const restRes = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100`)
-      if (!restRes.ok) return
-      const data: { fork: boolean; name: string; description: string | null; stargazers_count: number; forks_count: number; language: string | null; html_url: string }[] = await restRes.json()
-      const repos: GithubRepo[] = data
-        .filter((r) => !r.fork)
-        .sort((a, b) => (b.stargazers_count ?? 0) - (a.stargazers_count ?? 0))
-        .slice(0, 6)
-        .map((r) => ({
-          name: r.name,
-          description: r.description ?? r.name,
-          stars: r.stargazers_count ?? 0,
-          forks: r.forks_count ?? 0,
-          language: r.language ?? '-',
-          url: r.html_url
-        }))
-      setGithubRepos(repos)
+
+      // 2. Fallback: client-side GraphQL with VITE_GITHUB_TOKEN if present
+      try {
+        const graphqlQuery = `
+          query($login: String!) {
+            user(login: $login) {
+              pinnedItems(first: 6, types: REPOSITORY) {
+                nodes {
+                  ... on Repository {
+                    name
+                    description
+                    stargazers { totalCount }
+                    forkCount
+                    primaryLanguage { name }
+                    url
+                  }
+                }
+              }
+            }
+          }
+        `
+        const token = import.meta.env.VITE_GITHUB_TOKEN as string | undefined
+        const graphqlRes = await fetch('https://api.github.com/graphql', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ query: graphqlQuery, variables: { login: GITHUB_USERNAME } }),
+        })
+        if (graphqlRes.ok) {
+          const json = await graphqlRes.json() as GraphQLResponse
+          const nodes = json.data?.user?.pinnedItems?.nodes
+          if (!json.errors?.length && nodes?.length) {
+            setGithubRepos(mapNodes(nodes))
+            return
+          }
+        }
+      } catch {
+        // GraphQL unavailable — fall through to REST
+      }
+
+      // 3. Last resort: use hardcoded pinned repos
+      setGithubRepos(PINNED_REPOS)
     }
 
     const fetchPub = async () => {
-      const searchRes = await fetch(`${PUB_API_BASE}/search?q=publisher:${encodeURIComponent(PUB_PUBLISHER)}`)
-      if (!searchRes.ok) return
-      const search = await searchRes.json() as { packages?: { package: string }[] }
-      const names = (search.packages ?? []).map((p) => p.package)
-      if (names.length === 0) return
-      const results = await Promise.allSettled(
-        names.map(async (name) => {
-          const [pkgRes, scoreRes] = await Promise.all([
-            fetch(`${PUB_API_BASE}/packages/${name}`),
-            fetch(`${PUB_API_BASE}/packages/${name}/score`)
-          ])
-          if (!pkgRes.ok || !scoreRes.ok) return null
-          const pkg = await pkgRes.json()
-          const score = await scoreRes.json()
-          const description = pkg?.latest?.pubspec?.description ?? name
-          return {
-            name,
-            description,
-            likes: score.likeCount ?? 0,
-            points: score.grantedPoints ?? 0,
-            downloads: score.downloadCount30Days ?? 0,
-            url: `https://pub.dev/packages/${name}`,
-            features: [] as string[]
-          } as PubPackage
-        })
-      )
-      const packages = results
-        .filter((r): r is PromiseFulfilledResult<PubPackage | null> => r.status === 'fulfilled' && r.value != null)
-        .map((r) => r.value as PubPackage)
-      if (packages.length) setPubPackages(packages)
+      try {
+        const searchRes = await fetch(`${PUB_API_BASE}/search?q=publisher:${encodeURIComponent(PUB_PUBLISHER)}`)
+        if (!searchRes.ok) { setPubError(true); return }
+        const search = await searchRes.json() as { packages?: { package: string }[] }
+        const names = (search.packages ?? []).map((p) => p.package)
+        if (names.length === 0) { setPubError(true); return }
+        const results = await Promise.allSettled(
+          names.map(async (name) => {
+            const [pkgRes, scoreRes] = await Promise.all([
+              fetch(`${PUB_API_BASE}/packages/${name}`),
+              fetch(`${PUB_API_BASE}/packages/${name}/score`)
+            ])
+            if (!pkgRes.ok || !scoreRes.ok) return null
+            const pkg = await pkgRes.json()
+            const score = await scoreRes.json()
+            const description = pkg?.latest?.pubspec?.description ?? name
+            return {
+              name,
+              description,
+              likes: score.likeCount ?? 0,
+              points: score.grantedPoints ?? 0,
+              downloads: score.downloadCount30Days ?? 0,
+              url: `https://pub.dev/packages/${name}`,
+              features: [] as string[]
+            } as PubPackage
+          })
+        )
+        const packages = results
+          .filter((r): r is PromiseFulfilledResult<PubPackage | null> => r.status === 'fulfilled' && r.value != null)
+          .map((r) => r.value as PubPackage)
+          .sort((a, b) => b.downloads - a.downloads)
+        if (packages.length) {
+          setPubPackages(packages)
+        } else {
+          setPubError(true)
+        }
+      } catch {
+        setPubError(true)
+      }
     }
 
     Promise.all([fetchGithub(), fetchPub()]).finally(() => setLoading(false))
@@ -213,8 +309,21 @@ const Projects = () => {
             Pub.dev Packages
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {loading && pubPackages.length === 0 ? (
+            {loading && pubPackages.length === 0 && !pubError ? (
               <p className="text-gray-400 col-span-full">Loading packages…</p>
+            ) : pubError && pubPackages.length === 0 ? (
+              <p className="text-gray-400 col-span-full">
+                Could not load packages. Visit{' '}
+                <a
+                  href={`https://pub.dev/publishers/${PUB_PUBLISHER}/packages`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 underline"
+                >
+                  pub.dev
+                </a>{' '}
+                to see published packages.
+              </p>
             ) : (
             pubPackages.map((pkg) => (
               <div
@@ -264,4 +373,4 @@ const Projects = () => {
   )
 }
 
-export default Projects 
+export default Projects
