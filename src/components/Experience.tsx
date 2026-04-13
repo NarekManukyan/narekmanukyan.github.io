@@ -177,8 +177,8 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 20, filter: 'blur(4px)' },
+  show: { opacity: 1, y: 0, filter: 'blur(0px)' },
 }
 
 // ---------------------------------------------------------------------------
@@ -199,9 +199,9 @@ const ProjectCard = memo(({ project }: { project: Project }) => (
   >
     <h4 className="text-xl font-medium mb-2 text-white">{project.name}</h4>
     <p className="text-gray-300 mb-3">{project.description}</p>
-    <p className="text-gray-400 mb-4">Role: {project.role}</p>
+    <p className="text-gray-300 mb-4">Role: {project.role}</p>
     <div className="mb-4">
-      <h5 className="text-sm font-semibold text-gray-400 mb-2">Achievements:</h5>
+      <h5 className="text-sm font-semibold text-gray-300 mb-2">Achievements:</h5>
       <ul className="list-disc list-inside text-gray-300 space-y-1">
         {project.achievements.map((achievement) => (
           <li key={achievement}>{achievement}</li>
@@ -222,14 +222,14 @@ const ExperienceCard = memo(({ exp }: { exp: ExperienceEntry }) => (
     variants={itemVariants}
     className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-xl border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300"
   >
-    <div className="flex justify-between items-start mb-6">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 gap-2">
       <div>
         <h3 className="text-2xl font-semibold text-blue-400">{exp.company}</h3>
         <p className="text-gray-300 mt-1">{exp.position}</p>
       </div>
-      <div className="text-right">
+      <div className="sm:text-right">
         <p className="text-gray-300">{exp.duration}</p>
-        <p className="text-gray-400">{exp.location}</p>
+        <p className="text-gray-300">{exp.location}</p>
       </div>
     </div>
     <div className="space-y-8">
@@ -255,7 +255,7 @@ const Experience = () => (
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl font-bold mb-16 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x">
+        <h2 className="text-4xl font-bold mb-10 text-center text-blue-400">
           Experience
         </h2>
         <motion.div

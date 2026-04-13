@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react'
+import { motion, type Variants } from 'framer-motion'
+import { spring } from '../motion'
 
 // ---------------------------------------------------------------------------
 // Particle system constants
@@ -10,6 +12,35 @@ const PARTICLE_SPEED_RANGE = 0.5   // half-range; actual speed ±0.25
 const PARTICLE_OPACITY_MIN = 0.1
 const PARTICLE_OPACITY_RANGE = 0.5 // min + random * range
 const PARTICLE_COLOR_RGB = '99, 102, 241' // indigo-500
+
+// ---------------------------------------------------------------------------
+// Hero entrance animation variants
+// ---------------------------------------------------------------------------
+
+const heroTextVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12 } },
+}
+
+const heroItemVariants: Variants = {
+  hidden: { opacity: 0, y: 24, filter: 'blur(4px)' },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { ...spring.entrance },
+  },
+}
+
+const heroPanelVariants: Variants = {
+  hidden: { opacity: 0, x: 60, filter: 'blur(6px)' },
+  visible: {
+    opacity: 1,
+    x: 0,
+    filter: 'blur(0px)',
+    transition: { ...spring.entrance, delay: 0.4 },
+  },
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -64,7 +95,7 @@ class Particle {
 // ---------------------------------------------------------------------------
 
 const FlutterLogoIcon = () => (
-  <div className="absolute top-8 left-8 w-16 h-16 animate-float opacity-80">
+  <div className="absolute top-8 left-8 w-16 h-16 animate-float will-change-transform opacity-80">
     <svg
       viewBox="-30.5 0 317 317"
       xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +133,7 @@ const FloatingIcons = () => (
     <FlutterLogoIcon />
 
     {/* One Planet Summit */}
-    <div className="absolute top-20 right-24 w-14 h-14 animate-float-slower opacity-60">
+    <div className="absolute top-20 right-24 w-14 h-14 animate-float-slower will-change-transform opacity-60">
       <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="One Planet Summit icon">
         <title>One Planet Summit icon</title>
         <circle cx="12" cy="12" r="10" fill="#34D399" fillOpacity="0.2" />
@@ -111,7 +142,7 @@ const FloatingIcons = () => (
     </div>
 
     {/* HR Drone */}
-    <div className="absolute top-36 left-20 w-12 h-12 animate-float opacity-70">
+    <div className="absolute top-36 left-20 w-12 h-12 animate-float will-change-transform opacity-70">
       <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="HR Drone icon">
         <title>HR Drone icon</title>
         <rect width="24" height="24" rx="6" fill="#6366F1" fillOpacity="0.2" />
@@ -120,7 +151,7 @@ const FloatingIcons = () => (
     </div>
 
     {/* Bitsgap */}
-    <div className="absolute bottom-32 right-16 w-16 h-16 animate-float-slow opacity-75">
+    <div className="absolute bottom-32 right-16 w-16 h-16 animate-float-slow will-change-transform opacity-75">
       <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="Bitsgap icon">
         <title>Bitsgap icon</title>
         <path fill="#3B82F6" fillOpacity="0.2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
@@ -129,7 +160,7 @@ const FloatingIcons = () => (
     </div>
 
     {/* Krisp */}
-    <div className="absolute top-12 right-12 w-12 h-12 animate-float-slow opacity-60">
+    <div className="absolute top-12 right-12 w-12 h-12 animate-float-slow will-change-transform opacity-60">
       <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="Krisp logo">
         <title>Krisp logo</title>
         <path fill="#4A90E2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
@@ -138,7 +169,7 @@ const FloatingIcons = () => (
     </div>
 
     {/* Story Maker */}
-    <div className="absolute top-40 right-1/3 w-14 h-14 animate-float-slower opacity-50">
+    <div className="absolute top-40 right-1/3 w-14 h-14 animate-float-slower will-change-transform opacity-50">
       <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="Story Maker icon">
         <title>Story Maker icon</title>
         <path fill="#6C63FF" d="M21 17V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4.5c.5 0 1 .5 1 1s.5 1 1 1h1c.5 0 1-.5 1-1s.5-1 1-1H19a2 2 0 0 0 2-2z" />
@@ -147,7 +178,7 @@ const FloatingIcons = () => (
     </div>
 
     {/* Hydrated MobX */}
-    <div className="absolute bottom-20 right-1/4 w-10 h-10 animate-float opacity-70">
+    <div className="absolute bottom-20 right-1/4 w-10 h-10 animate-float will-change-transform opacity-70">
       <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="Hydrated MobX icon">
         <title>Hydrated MobX icon</title>
         <path fill="#FF9800" d="M17.66 9.53l-7.07 7.07-4.24-4.24 1.41-1.41 2.83 2.83 5.66-5.66 1.41 1.41zM4 12c0-4.42 3.58-8 8-8s8 3.58 8 8-3.58 8-8 8-8-3.58-8-8zm2 0c0 3.31 2.69 6 6 6s6-2.69 6-6-2.69-6-6-6-6 2.69-6 6z" />
@@ -155,7 +186,7 @@ const FloatingIcons = () => (
     </div>
 
     {/* Flutter Rust Bridge */}
-    <div className="absolute bottom-24 left-16 w-12 h-12 animate-float-slow opacity-60">
+    <div className="absolute bottom-24 left-16 w-12 h-12 animate-float-slow will-change-transform opacity-60">
       <svg viewBox="0 0 24 24" className="w-full h-full" aria-label="Flutter Rust Bridge icon">
         <title>Flutter Rust Bridge icon</title>
         <path fill="#DEA584" d="M12 2L2 19h20L12 2zm0 4l6.5 11h-13L12 6z" />
@@ -169,12 +200,12 @@ const FloatingIcons = () => (
         <path d="M12 6v12M6 12h12" stroke="#60A5FA" strokeWidth="1" />
       </svg>
     </div>
-    <div className="absolute bottom-1/3 right-1/4 w-16 h-16 opacity-20 blur-sm animate-float-slower" aria-hidden="true">
+    <div className="absolute bottom-1/3 right-1/4 w-16 h-16 opacity-20 blur-sm animate-float-slower will-change-transform" aria-hidden="true">
       <svg viewBox="0 0 24 24" className="w-full h-full">
         <path d="M12 2L2 19h20L12 2z" fill="none" stroke="#A78BFA" strokeWidth="1" />
       </svg>
     </div>
-    <div className="absolute top-1/3 right-1/5 w-24 h-24 opacity-25 blur-sm animate-float-slow" aria-hidden="true">
+    <div className="absolute top-1/3 right-1/5 w-24 h-24 opacity-25 blur-sm animate-float-slow will-change-transform" aria-hidden="true">
       <svg viewBox="0 0 24 24" className="w-full h-full">
         <rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="#34D399" strokeWidth="1" />
         <circle cx="12" cy="12" r="4" fill="none" stroke="#34D399" strokeWidth="1" />
@@ -200,7 +231,7 @@ const COLOR_MAP = {
 } as const
 
 const MockPhone = () => (
-  <div className="absolute -bottom-4 left-[70%] transform -translate-x-1/2 w-[180px] h-[360px] bg-gray-900/80 rounded-[28px] border-4 border-gray-700/50 overflow-hidden backdrop-blur-xl shadow-lg hover:shadow-blue-500/20 transition-shadow duration-500">
+  <div className="absolute -bottom-4 left-[70%] transform -translate-x-1/2 w-[180px] h-[360px] bg-gray-900/80 rounded-[28px] border-4 border-gray-700/50 overflow-hidden backdrop-blur-xl shadow-lg hover:shadow-blue-500/20 transition-shadow duration-500 hidden lg:block">
     <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 via-purple-500/5 to-cyan-500/5" />
 
     {/* Dynamic Island */}
@@ -276,6 +307,10 @@ const Hero = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
+    // Skip canvas animation if user prefers reduced motion
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) return
+
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -287,7 +322,14 @@ const Hero = () => {
       canvas.height = window.innerHeight
     }
     resizeCanvas()
-    window.addEventListener('resize', resizeCanvas)
+
+    // Debounce resize handler
+    let resizeTimer: ReturnType<typeof setTimeout>
+    const debouncedResize = () => {
+      clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(resizeCanvas, 150)
+    }
+    window.addEventListener('resize', debouncedResize)
 
     // Build particle pool once
     const particles: Particle[] = Array.from({ length: PARTICLE_COUNT }, () => {
@@ -297,8 +339,10 @@ const Hero = () => {
     })
 
     let rafId: number
+    let isVisible = true
 
     const animate = () => {
+      if (!isVisible) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       for (const particle of particles) {
         particle.update(canvas.width, canvas.height)
@@ -307,11 +351,28 @@ const Hero = () => {
       rafId = requestAnimationFrame(animate)
     }
 
+    // Pause canvas when Hero is off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          isVisible = true
+          rafId = requestAnimationFrame(animate)
+        } else {
+          isVisible = false
+          cancelAnimationFrame(rafId)
+        }
+      },
+      { threshold: 0.01 },
+    )
+    observer.observe(canvas)
+
     rafId = requestAnimationFrame(animate)
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas)
+      window.removeEventListener('resize', debouncedResize)
+      clearTimeout(resizeTimer)
       cancelAnimationFrame(rafId)
+      observer.disconnect()
     }
   }, [])
 
@@ -327,36 +388,58 @@ const Hero = () => {
       <div className="max-w-6xl mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-          {/* Text */}
-          <div className="text-center lg:text-left">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x">
+          {/* Text — staggered entrance */}
+          <motion.div
+            className="text-center lg:text-left"
+            variants={heroTextVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.h1
+              variants={heroItemVariants}
+              className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x"
+            >
               Narek Manukyan
-            </h1>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-8 text-gray-300">
+            </motion.h1>
+            <motion.h2
+              variants={heroItemVariants}
+              className="text-2xl md:text-3xl font-semibold mb-8 text-gray-300"
+            >
               Senior Flutter Developer &amp; Team Leader
-            </h2>
-            <p className="text-lg text-gray-400 mb-12 max-w-xl mx-auto lg:mx-0">
+            </motion.h2>
+            <motion.p
+              variants={heroItemVariants}
+              className="text-lg text-gray-300 mb-12 max-w-xl mx-auto lg:mx-0"
+            >
               Crafting exceptional mobile experiences with Flutter. Specializing in cross-platform
               development, real-time features, and innovative UI/UX solutions.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            </motion.p>
+            <motion.div
+              variants={heroItemVariants}
+              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+            >
               <a
                 href="#contact"
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
               >
                 Get in Touch
               </a>
               <a
                 href="#experience"
-                className="px-8 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
+                className="px-8 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
               >
                 View Experience
               </a>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          {/* Flutter animation panel */}
-          <div className="relative">
+          {/* Flutter animation panel — slides in from right */}
+          <motion.div
+            className="relative"
+            variants={heroPanelVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {/* Premium background gradients */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-cyan-500/5 rounded-2xl" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(59,130,246,0.1),transparent_50%),radial-gradient(ellipse_at_bottom_right,_rgba(147,51,234,0.1),transparent_50%)] rounded-2xl" />
@@ -371,9 +454,9 @@ const Hero = () => {
                 <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse-slow delay-1000" />
 
                 {/* Geometric shapes */}
-                <div className="absolute top-12 left-1/3 w-20 h-20 border-2 border-blue-500/20 rounded-lg transform rotate-45 animate-float-slower backdrop-blur-sm bg-blue-500/5" />
-                <div className="absolute bottom-20 left-1/4 w-16 h-16 border-2 border-purple-500/20 transform rotate-12 animate-float-slow backdrop-blur-sm bg-purple-500/5" />
-                <div className="absolute top-1/4 right-1/3 w-24 h-24 border-2 border-cyan-500/20 rounded-full animate-float backdrop-blur-sm bg-cyan-500/5" />
+                <div className="absolute top-12 left-1/3 w-20 h-20 border-2 border-blue-500/20 rounded-lg transform rotate-45 animate-float-slower will-change-transform backdrop-blur-sm bg-blue-500/5" />
+                <div className="absolute bottom-20 left-1/4 w-16 h-16 border-2 border-purple-500/20 transform rotate-12 animate-float-slow will-change-transform backdrop-blur-sm bg-purple-500/5" />
+                <div className="absolute top-1/4 right-1/3 w-24 h-24 border-2 border-cyan-500/20 rounded-full animate-float will-change-transform backdrop-blur-sm bg-cyan-500/5" />
 
                 {/* Hexagon grid overlay */}
                 <div className="absolute inset-0 opacity-10 mix-blend-lighten">
@@ -428,10 +511,10 @@ const Hero = () => {
                 <div className="text-white">{'}'}</div>
               </div>
 
-              {/* Mock phone */}
+              {/* Mock phone — hidden on mobile */}
               <MockPhone />
             </div>
-          </div>
+          </motion.div>
 
         </div>
       </div>

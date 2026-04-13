@@ -1,34 +1,19 @@
 import { motion, type Variants } from 'framer-motion'
+import { spring, viewportOnce } from '../motion'
 
 // ---------------------------------------------------------------------------
-// Animation constants — single source of truth for all motion values
+// Animation constants
 // ---------------------------------------------------------------------------
-const FADE_DURATION = 0.5
-
-const SECTION_DELAYS = {
-  heading: 0.2,
-  leftCard: 0.3,
-  rightCard: 0.4,
-} as const
-
-/** Shared viewport config so `viewport` prop is never duplicated. */
-const ONCE_IN_VIEW = { once: true } as const
-
-/** Fade-up variant reused by the section wrapper and heading. */
-const fadeUpVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-}
 
 /** Slide-in variants for the two cards. */
 const slideInVariants = {
   left: {
-    hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0 },
+    hidden: { opacity: 0, x: -24, filter: 'blur(4px)' },
+    visible: { opacity: 1, x: 0, filter: 'blur(0px)' },
   },
   right: {
-    hidden: { opacity: 0, x: 20 },
-    visible: { opacity: 1, x: 0 },
+    hidden: { opacity: 0, x: 24, filter: 'blur(4px)' },
+    visible: { opacity: 1, x: 0, filter: 'blur(0px)' },
   },
 } satisfies Record<string, Variants>
 
@@ -53,8 +38,8 @@ const AboutCard = ({ title, paragraphs, variants, delay }: AboutCardProps) => (
     variants={variants}
     initial="hidden"
     whileInView="visible"
-    transition={{ duration: FADE_DURATION, delay }}
-    viewport={ONCE_IN_VIEW}
+    transition={{ ...spring.entrance, delay }}
+    viewport={viewportOnce}
     className={CARD_CLASS}
   >
     <h3 className="text-xl sm:text-2xl font-semibold mb-4 text-purple-400">{title}</h3>
@@ -86,41 +71,31 @@ const EXPERTISE_PARAGRAPHS = [
 // ---------------------------------------------------------------------------
 const About = () => (
   <section id="about" className="py-12 sm:py-20 px-4 sm:px-6">
-    <div className="max-w-4xl mx-auto">
-      <motion.div
-        variants={fadeUpVariants}
-        initial="hidden"
-        whileInView="visible"
-        transition={{ duration: FADE_DURATION }}
-        viewport={ONCE_IN_VIEW}
-        className="space-y-8"
+    <div className="max-w-6xl mx-auto">
+      <motion.h2
+        initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        transition={{ ...spring.entrance }}
+        viewport={viewportOnce}
+        className="text-3xl sm:text-4xl font-bold text-center text-purple-400 mb-10"
       >
-        <motion.h2
-          variants={fadeUpVariants}
-          initial="hidden"
-          whileInView="visible"
-          transition={{ duration: FADE_DURATION, delay: SECTION_DELAYS.heading }}
-          viewport={ONCE_IN_VIEW}
-          className="text-3xl sm:text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600"
-        >
-          About Me
-        </motion.h2>
+        About Me
+      </motion.h2>
 
-        <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
-          <AboutCard
-            title="Background"
-            paragraphs={BACKGROUND_PARAGRAPHS}
-            variants={slideInVariants.left}
-            delay={SECTION_DELAYS.leftCard}
-          />
-          <AboutCard
-            title="Expertise"
-            paragraphs={EXPERTISE_PARAGRAPHS}
-            variants={slideInVariants.right}
-            delay={SECTION_DELAYS.rightCard}
-          />
-        </div>
-      </motion.div>
+      <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
+        <AboutCard
+          title="Background"
+          paragraphs={BACKGROUND_PARAGRAPHS}
+          variants={slideInVariants.left}
+          delay={0.1}
+        />
+        <AboutCard
+          title="Expertise"
+          paragraphs={EXPERTISE_PARAGRAPHS}
+          variants={slideInVariants.right}
+          delay={0.2}
+        />
+      </div>
     </div>
   </section>
 )

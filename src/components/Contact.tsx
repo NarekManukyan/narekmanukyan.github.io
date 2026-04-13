@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { LinkedInIcon, GitHubIcon } from '../icons'
+import { spring, viewportOnce } from '../motion'
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -9,10 +10,19 @@ import { LinkedInIcon, GitHubIcon } from '../icons'
 const CV_PATH = '/CV_Narek_Manukyan.pdf'
 const COPY_FEEDBACK_MS = 2000
 
-const FADE_UP = { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } }
-const FADE_LEFT = { initial: { opacity: 0, x: -20 }, animate: { opacity: 1, x: 0 } }
-const FADE_RIGHT = { initial: { opacity: 0, x: 20 }, animate: { opacity: 1, x: 0 } }
-const DEFAULT_TRANSITION = { duration: 0.6 }
+const FADE_UP = {
+  initial: { opacity: 0, y: 20, filter: 'blur(4px)' },
+  animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
+}
+const FADE_LEFT = {
+  initial: { opacity: 0, x: -20 },
+  animate: { opacity: 1, x: 0 },
+}
+const FADE_RIGHT = {
+  initial: { opacity: 0, x: 20 },
+  animate: { opacity: 1, x: 0 },
+}
+const DEFAULT_TRANSITION = { ...spring.entrance }
 
 // ---------------------------------------------------------------------------
 // Types
@@ -231,29 +241,34 @@ function DownloadIcon() {
 
 export default function Contact() {
   const [copied, setCopied] = useState<string | null>(null)
+  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+
+  // Cleanup timeout on unmount
+  useEffect(() => () => clearTimeout(timerRef.current), [])
 
   const copyToClipboard = useCallback(async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text)
       setCopied(label)
-      setTimeout(() => setCopied(null), COPY_FEEDBACK_MS)
+      clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => setCopied(null), COPY_FEEDBACK_MS)
     } catch (err) {
       console.error('Failed to copy text: ', err)
     }
   }, [])
 
   return (
-    <section id="contact" className="py-16 bg-gradient-to-b from-gray-900 to-black">
+    <section id="contact" className="py-20 bg-gradient-to-b from-gray-900 to-black">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           {...FADE_UP}
           transition={DEFAULT_TRANSITION}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4">
+          <h2 className="text-4xl font-bold text-purple-400 mb-4">
             Let's Connect
           </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-gray-300 max-w-2xl mx-auto">
             I'm always open to new opportunities and collaborations. Feel free to reach out!
           </p>
         </motion.div>
@@ -265,14 +280,14 @@ export default function Contact() {
               <motion.div
                 key={info.label}
                 {...FADE_UP}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={{ ...spring.entrance, delay: index * 0.1 }}
                 className="flex items-center space-x-4 p-4 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all"
               >
                 <div className="text-purple-400" aria-hidden="true">
                   {info.icon}
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-gray-400">{info.label}</p>
+                  <p className="text-sm text-gray-300">{info.label}</p>
                   {info.url ? (
                     <a
                       href={info.url}
@@ -306,11 +321,11 @@ export default function Contact() {
 
             {/* CV download */}
             <div className="flex flex-col items-center mt-8">
-              <span className="text-gray-400 text-sm mb-2">Want to know more?</span>
+              <span className="text-gray-300 text-sm mb-2">Download my resume</span>
               <a
                 href={CV_PATH}
                 download
-                className="w-full max-w-sm flex justify-center items-center px-7 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 animate-gradient-x hover:from-purple-600 hover:to-blue-600 text-white rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                className="w-full max-w-sm flex justify-center items-center px-7 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
                 aria-label="Download CV as PDF"
               >
                 <DownloadIcon />
@@ -347,24 +362,36 @@ export default function Contact() {
               </ul>
             </div>
 
-            {/* Languages */}
+            {/* Languages with animated proficiency bars */}
             <div className="p-6 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50">
               <h3 className="text-xl font-semibold text-white mb-4">Languages</h3>
-              <div className="space-y-2">
-                {LANGUAGES.map(({ name, proficiency }) => (
+              <div className="space-y-3">
+                {LANGUAGES.map(({ name, proficiency }, index) => (
                   <div key={name}>
-                    <p className="text-gray-300">{name}</p>
+                    <div className="flex justify-between mb-1">
+                      <p className="text-gray-300">{name}</p>
+                      <p className="text-sm text-gray-400">{proficiency}%</p>
+                    </div>
                     <div
-                      className="w-full bg-gray-700 rounded-full h-2"
+                      className="w-full bg-gray-700 rounded-full h-2 overflow-hidden"
                       role="progressbar"
                       aria-label={`${name} proficiency`}
                       aria-valuenow={proficiency}
                       aria-valuemin={0}
                       aria-valuemax={100}
                     >
-                      <div
+                      <motion.div
                         className="bg-purple-500 h-2 rounded-full"
-                        style={{ width: `${proficiency}%` }}
+                        initial={{ scaleX: 0 }}
+                        whileInView={{ scaleX: 1 }}
+                        viewport={viewportOnce}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 50,
+                          damping: 15,
+                          delay: index * 0.15,
+                        }}
+                        style={{ width: `${proficiency}%`, transformOrigin: 'left' }}
                       />
                     </div>
                   </div>

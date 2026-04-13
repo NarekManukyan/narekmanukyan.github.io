@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Analytics } from '@vercel/analytics/react'
+import { motion, useScroll, useSpring } from 'framer-motion'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import About from './components/About'
@@ -7,7 +8,6 @@ import Experience from './components/Experience'
 import Skills from './components/Skills'
 import Contact from './components/Contact'
 import Projects from './components/Projects'
-import { motion } from 'framer-motion'
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -38,6 +38,10 @@ function App() {
   const [darkMode, setDarkMode] = useState(true)
   const [activeSection, setActiveSection] = useState<string>(FIRST_SECTION)
 
+  // Scroll progress bar
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 })
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
   }, [darkMode])
@@ -60,6 +64,13 @@ function App() {
   return (
     <div className="dark:bg-gray-900 dark:text-white min-h-screen">
       <Analytics />
+
+      {/* Scroll progress indicator */}
+      <motion.div
+        style={{ scaleX, transformOrigin: 'left' }}
+        className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 z-[60]"
+      />
+
       <Navbar activeSection={activeSection} setActiveSection={setActiveSection} />
       <div id={FIRST_SECTION}>
         <Hero />
@@ -74,15 +85,17 @@ function App() {
       <div className="fixed z-50 right-4 bottom-4 sm:right-8 sm:bottom-8">
         <motion.button
           type="button"
-          animate={{ opacity: 1 }}
-          initial={{ opacity: 0 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.94 }}
           transition={{ duration: 0.4 }}
           onClick={handleFloatingButtonClick}
           aria-label={isLastSection ? 'Scroll to top' : 'Download CV'}
-          className={`px-7 py-3 rounded-full shadow-2xl font-semibold flex items-center gap-2 transition-all duration-300 focus:outline-none focus:ring-2 animate-gradient-x ${
+          className={`px-7 py-3 rounded-full shadow-2xl font-semibold flex items-center gap-2 transition-colors duration-300 focus:outline-none focus-visible:ring-2 ${
             isLastSection
-              ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white hover:shadow-pink-500/40 focus:ring-pink-400'
-              : 'bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white hover:shadow-purple-500/40 focus:ring-purple-400'
+              ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white hover:shadow-pink-500/40 focus-visible:ring-pink-400'
+              : 'bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white hover:shadow-purple-500/40 focus-visible:ring-purple-400'
           }`}
         >
           {isLastSection ? (

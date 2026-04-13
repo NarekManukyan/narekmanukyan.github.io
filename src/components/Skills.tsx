@@ -76,8 +76,8 @@ const containerVariants = {
 }
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 20, filter: 'blur(4px)' },
+  show: { opacity: 1, y: 0, filter: 'blur(0px)' },
 }
 
 // ---------------------------------------------------------------------------
@@ -122,7 +122,7 @@ const Skills = () => (
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="text-4xl font-bold mb-16 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x"
+        className="text-4xl font-bold mb-10 text-center text-purple-400"
       >
         Skills & Expertise
       </motion.h2>
