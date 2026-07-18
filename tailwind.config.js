@@ -7,72 +7,57 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-        },
+        // Semantic tokens (see src/index.css :root). Solid tokens map to CSS
+        // vars; alpha variants are literal so static Tailwind classes work.
+        bg: 'var(--bg)',
+        surface: 'var(--surface)',
+        'surface-2': 'var(--surface-2)',
+        line: 'var(--line)',
+        'line-soft': 'oklch(0.36 0.018 245 / 0.6)',
+        ink: 'var(--ink)',
+        'ink-muted': 'var(--ink-muted)',
+        'ink-faint': 'var(--ink-faint)',
+        accent: 'var(--accent)',
+        'accent-strong': 'var(--accent-strong)',
+        'accent-ink': 'var(--accent-ink)',
+        'accent-soft': 'oklch(0.75 0.135 228 / 0.14)',
+        'accent-line': 'oklch(0.75 0.135 228 / 0.42)',
+        warm: 'var(--warm)',
+        'warm-strong': 'var(--warm-strong)',
+        'warm-soft': 'oklch(0.82 0.13 78 / 0.14)',
+        'warm-line': 'oklch(0.82 0.13 78 / 0.4)',
+        navbar: 'oklch(0.155 0.017 245 / 0.72)',
+        scrim: 'oklch(0.11 0.015 245 / 0.6)',
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        display: ['Bricolage Grotesque', 'Geist', 'sans-serif'],
+        sans: ['Geist', 'Inter', 'sans-serif'],
+        mono: ['Geist Mono', 'ui-monospace', 'monospace'],
+      },
+      maxWidth: {
+        prose: '68ch',
+      },
+      transitionTimingFunction: {
+        'out-quint': 'cubic-bezier(0.22, 1, 0.36, 1)',
+        'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
       },
       animation: {
-        'gradient-x': 'gradient-x 15s ease infinite',
-        'gradient-y': 'gradient-y 15s ease infinite',
-        'gradient-xy': 'gradient-xy 15s ease infinite',
-        'float': 'float 6s ease-in-out infinite',
-        'float-slow': 'float 8s ease-in-out infinite',
-        'float-slower': 'float 10s ease-in-out infinite',
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        float: 'float 7s ease-in-out infinite',
+        'float-slow': 'float 9s ease-in-out infinite',
+        'float-slower': 'float 11s ease-in-out infinite',
+        'pulse-slow': 'pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
-        'gradient-y': {
-          '0%, 100%': {
-            'background-size': '400% 400%',
-            'background-position': 'center top'
-          },
-          '50%': {
-            'background-size': '200% 200%',
-            'background-position': 'center center'
-          }
-        },
-        'gradient-x': {
-          '0%, 100%': {
-            'background-size': '200% 200%',
-            'background-position': 'left center'
-          },
-          '50%': {
-            'background-size': '200% 200%',
-            'background-position': 'right center'
-          }
-        },
-        'gradient-xy': {
-          '0%, 100%': {
-            'background-size': '400% 400%',
-            'background-position': 'left center'
-          },
-          '50%': {
-            'background-size': '200% 200%',
-            'background-position': 'right center'
-          }
-        },
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
         },
       },
       boxShadow: {
-        'glow': '0 0 15px rgba(59, 130, 246, 0.5)',
-        'glow-lg': '0 0 30px rgba(59, 130, 246, 0.7)',
+        glow: '0 0 24px oklch(0.75 0.135 228 / 0.25)',
+        'card-hover': '0 12px 40px -12px oklch(0.1 0.02 245 / 0.7)',
       },
     },
   },
   plugins: [],
-} 
+}

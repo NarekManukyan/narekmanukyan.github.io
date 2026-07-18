@@ -8,12 +8,12 @@ import { spring, viewportOnce } from '../motion'
 /** Slide-in variants for the two cards. */
 const slideInVariants = {
   left: {
-    hidden: { opacity: 0, x: -24, filter: 'blur(4px)' },
-    visible: { opacity: 1, x: 0, filter: 'blur(0px)' },
+    hidden: { opacity: 0, x: -20 },
+    visible: { opacity: 1, x: 0 },
   },
   right: {
-    hidden: { opacity: 0, x: 24, filter: 'blur(4px)' },
-    visible: { opacity: 1, x: 0, filter: 'blur(0px)' },
+    hidden: { opacity: 0, x: 20 },
+    visible: { opacity: 1, x: 0 },
   },
 } satisfies Record<string, Variants>
 
@@ -30,22 +30,22 @@ interface AboutCardProps {
 // ---------------------------------------------------------------------------
 // AboutCard — reusable card with entrance animation
 // ---------------------------------------------------------------------------
-const CARD_CLASS =
-  'bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700/50 hover:border-purple-500/50 transition-all'
+const CARD_CLASS = 'card p-7'
 
 const AboutCard = ({ title, paragraphs, variants, delay }: AboutCardProps) => (
   <motion.div
     variants={variants}
     initial="hidden"
     whileInView="visible"
+    whileHover={{ y: -3 }}
     transition={{ ...spring.entrance, delay }}
     viewport={viewportOnce}
     className={CARD_CLASS}
   >
-    <h3 className="text-xl sm:text-2xl font-semibold mb-4 text-purple-400">{title}</h3>
+    <h3 className="text-xl sm:text-2xl font-semibold mb-4 text-ink">{title}</h3>
     <div className="space-y-4">
       {paragraphs.map((text) => (
-        <p key={text} className="text-gray-300 text-sm sm:text-base leading-relaxed">
+        <p key={text} className="text-ink-muted text-[15px] sm:text-base leading-relaxed max-w-prose">
           {text}
         </p>
       ))}
@@ -57,29 +57,29 @@ const AboutCard = ({ title, paragraphs, variants, delay }: AboutCardProps) => (
 // Card content data — separated from structure for easy editing
 // ---------------------------------------------------------------------------
 const BACKGROUND_PARAGRAPHS = [
-  "I hold a Bachelor's degree in Software Engineering from the National Polytechnical University of Armenia. With over 6 years of experience in software development, I've specialized in mobile app development using Flutter.",
-  'My journey includes 2 years of hardware development experience, where I worked with Raspberry Pi and various sensors, demonstrating my versatility in both software and hardware domains.',
+  "I hold a B.Sc. in Software Engineering from the National Polytechnic University of Armenia. I've spent 7+ years shipping iOS and Android apps. Flutter is my main tool, but I drop into Swift and Kotlin whenever cross-platform alone isn't enough.",
+  "Before mobile I worked in hardware at 10X Engineering, building interactive displays and STEM kits with Raspberry Pi and sensors. That work is still why I pay attention to what's happening below the framework, especially latency.",
 ]
 
 const EXPERTISE_PARAGRAPHS = [
-  "As a Flutter Developer and Team Leader, I've successfully led projects across diverse industries including healthcare, hospitality, retail, fitness, luxury services, recruitment, and cryptocurrency trading.",
-  "I'm committed to continuous learning and staying current with the latest technologies and development trends, ensuring that I deliver cutting-edge solutions to complex problems.",
+  'I lead a 10-engineer mobile team running four or five products at once, including Krisp. I own delivery from scoping to release, and I have shipped across healthcare, hospitality, fitness, luxury, recruitment, and crypto trading.',
+  "I have also pushed AI tools into how the team actually works. I got people using Claude Code every day, wrote internal guides for it, and coach both engineers and non-engineers on prompting and agent workflows.",
 ]
 
 // ---------------------------------------------------------------------------
 // About
 // ---------------------------------------------------------------------------
 const About = () => (
-  <section id="about" className="py-12 sm:py-20 px-4 sm:px-6">
+  <section id="about" className="py-16 sm:py-24 px-4 sm:px-6">
     <div className="max-w-6xl mx-auto">
       <motion.h2
-        initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
         transition={{ ...spring.entrance }}
         viewport={viewportOnce}
-        className="text-3xl sm:text-4xl font-bold text-center text-purple-400 mb-10"
+        className="text-3xl sm:text-4xl font-bold text-ink mb-10"
       >
-        About Me
+        About
       </motion.h2>
 
       <div className="grid md:grid-cols-2 gap-8 sm:gap-12">

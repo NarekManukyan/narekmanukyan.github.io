@@ -8,7 +8,6 @@ import { motion } from 'framer-motion'
 interface SkillCategory {
   category: string
   items: string[]
-  icon: string
 }
 
 // ---------------------------------------------------------------------------
@@ -17,49 +16,40 @@ interface SkillCategory {
 
 const SKILL_CATEGORIES: SkillCategory[] = [
   {
-    category: 'Mobile Development',
-    items: ['Flutter', 'Dart', 'Swift', 'Kotlin', 'React Native'],
-    icon: '📱',
+    category: 'Leadership & Delivery',
+    items: ['Team Leadership', 'Mentoring', 'Hiring & Interviewing', 'Estimation & Planning', 'Agile / Scrum', 'Code Review'],
   },
   {
-    category: 'State Management',
-    items: ['MobX', 'BloC', 'Freezed', 'Provider', 'Riverpod'],
-    icon: '🔄',
+    category: 'AI-Assisted Engineering',
+    items: ['Claude Code', 'Cursor', 'GitHub Copilot', 'Prompt Engineering', 'MCP Integrations', 'Team Enablement'],
   },
   {
-    category: 'Backend & APIs',
-    items: ['REST API', 'WebSocket', 'Firebase', 'Stripe', 'Google Cloud Platform'],
-    icon: '⚙️',
+    category: 'Mobile & Native',
+    items: ['Flutter', 'Flutter Web', 'iOS / Swift', 'macOS / AppKit', 'Android / Kotlin', 'Platform Views', 'Platform Channels'],
   },
   {
-    category: 'UI/UX',
-    items: ['Figma', 'Material Design', 'Custom Animations', 'Responsive Design'],
-    icon: '🎨',
+    category: 'Languages',
+    items: ['Dart', 'Swift', 'Kotlin', 'Java', 'Python', 'Rust', 'JavaScript'],
   },
   {
-    category: 'DevOps & Tools',
-    items: ['CI/CD', 'Git', 'Docker', 'VS Code', 'Android Studio', 'Xcode'],
-    icon: '🛠️',
+    category: 'Architecture & State',
+    items: ['Clean Architecture', 'MVVM', 'BLoC', 'MobX', 'Riverpod', 'Provider', 'Freezed', 'DI'],
   },
   {
-    category: 'Hardware & IoT',
-    items: ['Raspberry Pi', 'Distance Sensors', 'Python', 'Python QT'],
-    icon: '🔌',
+    category: 'Real-Time & APIs',
+    items: ['REST', 'WebSocket', 'WebRTC', 'Firebase', 'Real-Time Audio'],
   },
   {
-    category: 'Payment Systems',
-    items: ['Stripe', 'In-app Purchases', 'Online Payments', 'Subscription Management'],
-    icon: '💳',
+    category: 'Payments & Commerce',
+    items: ['Stripe', 'In-App Purchases', 'Subscriptions', 'Passkey Auth'],
   },
   {
-    category: 'Real-time Features',
-    items: ['WebRTC', 'WebSocket', 'Video Streaming', 'Chat Systems'],
-    icon: '⚡',
+    category: 'Cloud & DevOps',
+    items: ['GCP', 'CI/CD', 'Codemagic', 'GitHub Actions', 'Fastlane', 'Docker', 'Git / GitLab'],
   },
   {
-    category: 'Cross-platform',
-    items: ['Flutter WEB', 'Responsive Design', 'Platform-specific Features'],
-    icon: '🌐',
+    category: 'Integrations & SDKs',
+    items: ['flutter_rust_bridge', 'Twilio Voice', 'Krisp SDK', 'TradingView', 'HighCharts', 'StoreKit', 'Zendesk'],
   },
 ]
 
@@ -71,13 +61,13 @@ const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 },
+    transition: { staggerChildren: 0.06 },
   },
 }
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 20, filter: 'blur(4px)' },
-  show: { opacity: 1, y: 0, filter: 'blur(0px)' },
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0 },
 }
 
 // ---------------------------------------------------------------------------
@@ -85,20 +75,24 @@ const cardVariants = {
 // ---------------------------------------------------------------------------
 
 const SkillBadge = memo(({ label }: { label: string }) => (
-  <span className="px-3 py-1 bg-gray-700/50 rounded-full text-sm text-gray-300 hover:bg-blue-500/50 hover:text-white transition-all duration-200">
+  <span className="px-2.5 py-1 rounded-md border border-line text-xs font-mono text-ink-muted hover:border-accent-line hover:text-accent-strong transition-colors duration-200">
     {label}
   </span>
 ))
 SkillBadge.displayName = 'SkillBadge'
 
-const SkillCard = memo(({ skill }: { skill: SkillCategory }) => (
+const SkillCard = memo(({ skill, index }: { skill: SkillCategory; index: number }) => (
   <motion.div
     variants={cardVariants}
-    className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-700/50 hover:border-blue-500/50"
+    whileHover={{ y: -3 }}
+    transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+    className="card group p-6"
   >
-    <div className="flex items-center mb-4">
-      <span className="text-2xl mr-3">{skill.icon}</span>
-      <h3 className="text-xl font-semibold text-blue-400">{skill.category}</h3>
+    <div className="flex items-baseline gap-3 mb-4">
+      <span className="font-mono text-sm text-accent tnum transition-colors duration-300 group-hover:text-warm" aria-hidden="true">
+        {String(index + 1).padStart(2, '0')}
+      </span>
+      <h3 className="text-lg font-semibold text-ink">{skill.category}</h3>
     </div>
     <div className="flex flex-wrap gap-2">
       {skill.items.map((item) => (
@@ -114,27 +108,26 @@ SkillCard.displayName = 'SkillCard'
 // ---------------------------------------------------------------------------
 
 const Skills = () => (
-  <section id="skills" className="py-20 relative overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-blue-900/20" />
-    <div className="max-w-6xl mx-auto px-4 relative">
+  <section id="skills" className="py-16 sm:py-24 relative">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
       <motion.h2
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 18 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         viewport={{ once: true }}
-        className="text-4xl font-bold mb-10 text-center text-purple-400"
+        className="text-3xl sm:text-4xl font-bold mb-10 text-ink"
       >
-        Skills & Expertise
+        Skills &amp; Expertise
       </motion.h2>
       <motion.div
         variants={containerVariants}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: '-100px' }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
       >
-        {SKILL_CATEGORIES.map((skill) => (
-          <SkillCard key={skill.category} skill={skill} />
+        {SKILL_CATEGORIES.map((skill, index) => (
+          <SkillCard key={skill.category} skill={skill} index={index} />
         ))}
       </motion.div>
     </div>
