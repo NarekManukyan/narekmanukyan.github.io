@@ -54,7 +54,7 @@ const PROJECTS: WorkProject[] = [
     name: 'JITMeal POS',
     tagline: 'Cloud point-of-sale system',
     role: 'Mobile Team Lead',
-    outcome: 'Built the POS from scratch — orders, inventory, reporting, profit analytics — and optimized the Flutter Web build for in-store terminals.',
+    outcome: 'Built the POS from scratch (orders, inventory, reporting, profit analytics) and optimized the Flutter Web build for in-store terminals.',
     tech: ['Flutter', 'Flutter Web', 'WebSocket', 'MobX'],
     image: '/images/jitmeal.png',
     alt: 'JITMeal point-of-sale terminal interface',
@@ -163,7 +163,7 @@ const Work = () => (
       >
         <h2 className="text-3xl sm:text-4xl font-bold text-ink mb-3">Selected work</h2>
         <p className="text-ink-muted">
-          Apps I've built and led end to end — from real-time audio and video to trading,
+          Apps I've built and led end to end, from real-time audio and video to trading,
           telemedicine, and point-of-sale.
         </p>
       </motion.div>
@@ -202,7 +202,7 @@ const Work = () => (
               <span className="font-mono text-xs text-ink-faint">Mobile Team Lead · via M-One</span>
             </div>
             <h3 className="font-display text-2xl sm:text-3xl font-bold text-ink mb-2">Krisp</h3>
-            <p className="text-accent-strong mb-4">AI voice &amp; meeting app — iOS &amp; Android</p>
+            <p className="text-accent-strong mb-4">AI voice &amp; meeting app for iOS &amp; Android</p>
             <p className="text-ink-muted leading-relaxed max-w-prose mb-5">
               I lead the mobile team building Krisp across both platforms. The hard parts are native:
               Twilio voice calling wired up in Swift and Kotlin and paired with the Krisp

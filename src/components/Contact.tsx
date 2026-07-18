@@ -39,7 +39,7 @@ interface Language {
 // ---------------------------------------------------------------------------
 
 const HOW_I_OPERATE = [
-  { step: '01', title: 'Scope & plan', body: 'Clear scope, milestones, and honest estimates — no vague guesses.' },
+  { step: '01', title: 'Scope & plan', body: 'Clear scope, milestones, and an honest timeline.' },
   { step: '02', title: 'Build in increments', body: 'Reviewable increments across iOS and Android, dropping to native where it counts.' },
   { step: '03', title: 'Review & mentor', body: 'Structured code review and 1:1s that raise both quality and the team.' },
   { step: '04', title: 'Launch & iterate', body: 'Store submission, release, then iteration on real usage.' },

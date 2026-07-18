@@ -321,8 +321,8 @@ const Projects = () => {
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-ink mb-3">Open source</h2>
           <p className="text-ink-muted">
-            7 published Flutter packages on pub.dev with 2,000+ combined monthly downloads —
-            the same native and tooling depth I bring to client work, in public.
+            7 published Flutter packages on pub.dev with 2,000+ combined monthly downloads.
+            The same native and tooling depth I bring to client work, in public.
           </p>
         </motion.div>
 

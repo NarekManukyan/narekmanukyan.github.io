@@ -252,7 +252,7 @@ const Hero = () => {
               variants={heroItemVariants}
               className="font-display text-[clamp(2.4rem,5.5vw,4.25rem)] font-bold leading-[1.02] text-ink"
             >
-              I ship production iOS &amp; Android apps — and lead the teams that build them.
+              I ship production iOS &amp; Android apps, and lead the teams that build them.
             </motion.h1>
 
             <motion.p
@@ -260,9 +260,9 @@ const Hero = () => {
               className="mt-6 text-base sm:text-lg text-ink-muted max-w-prose leading-relaxed"
             >
               7+ years in Flutter with the native Swift and Kotlin depth to go lower when it matters.
-              I'm Mobile Team Lead on <span className="text-accent-strong">Krisp</span> — real-time
-              audio and native integrations — and I moved the team to AI-assisted delivery with
-              Claude Code.
+              I'm Mobile Team Lead on <span className="text-accent-strong">Krisp</span>, building
+              real-time audio and native integrations, and I moved the team to AI-assisted delivery
+              with Claude Code.
             </motion.p>
 
             <motion.p
