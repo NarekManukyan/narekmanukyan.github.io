@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { LinkedInIcon, GitHubIcon } from '../icons'
 import { spring, viewportOnce } from '../motion'
 
@@ -137,7 +137,6 @@ function DownloadIcon() {
 
 export default function Contact() {
   const [copied, setCopied] = useState<string | null>(null)
-  const [form, setForm] = useState({ name: '', email: '', lane: 'Full-time role', brief: '' })
   const timerRef = useRef<ReturnType<typeof setTimeout>>()
 
   useEffect(() => () => clearTimeout(timerRef.current), [])
@@ -152,17 +151,6 @@ export default function Contact() {
       console.error('Failed to copy text: ', err)
     }
   }, [])
-
-  // No backend required: compose a prefilled email the visitor can send.
-  const handleSubmit = useCallback(
-    (e: FormEvent) => {
-      e.preventDefault()
-      const subject = `${form.lane} inquiry${form.name ? ` — ${form.name}` : ''}`
-      const body = `Name: ${form.name}\nEmail: ${form.email}\nType: ${form.lane}\n\nDetails:\n${form.brief}`
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-    },
-    [form],
-  )
 
   return (
     <section id="contact" className="py-16 sm:py-24 border-t border-line-soft">
@@ -196,85 +184,41 @@ export default function Contact() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8">
-          {/* Project inquiry form — primary path */}
-          <motion.form
-            onSubmit={handleSubmit}
+          {/* Direct contact — primary path */}
+          <motion.div
             {...FADE_UP}
             whileInView="animate"
             initial="initial"
             viewport={viewportOnce}
             transition={DEFAULT_TRANSITION}
-            className="card p-6 sm:p-8"
+            className="card p-6 sm:p-8 flex flex-col justify-center"
           >
-            <h3 className="text-xl font-semibold text-ink mb-1">Get in touch</h3>
-            <p className="text-sm text-ink-muted mb-6">For hiring managers, recruiters, and freelance clients.</p>
-
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="c-name" className="block text-sm text-ink-muted mb-1.5">Name</label>
-                <input
-                  id="c-name"
-                  type="text"
-                  required
-                  value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  className="w-full rounded-lg bg-bg border border-line px-4 py-2.5 text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none transition-colors"
-                  placeholder="Your name"
-                  autoComplete="name"
-                />
-              </div>
-              <div>
-                <label htmlFor="c-email" className="block text-sm text-ink-muted mb-1.5">Email</label>
-                <input
-                  id="c-email"
-                  type="email"
-                  required
-                  value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                  className="w-full rounded-lg bg-bg border border-line px-4 py-2.5 text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none transition-colors"
-                  placeholder="you@company.com"
-                  autoComplete="email"
-                  inputMode="email"
-                />
-              </div>
-              <div>
-                <label htmlFor="c-lane" className="block text-sm text-ink-muted mb-1.5">I'm reaching out about</label>
-                <select
-                  id="c-lane"
-                  value={form.lane}
-                  onChange={(e) => setForm((f) => ({ ...f, lane: e.target.value }))}
-                  className="w-full rounded-lg bg-bg border border-line px-4 py-2.5 text-ink focus:border-accent focus:outline-none transition-colors"
-                >
-                  <option>Full-time role</option>
-                  <option>Freelance project</option>
-                  <option>Not sure yet</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="c-brief" className="block text-sm text-ink-muted mb-1.5">What's the role or project?</label>
-                <textarea
-                  id="c-brief"
-                  required
-                  rows={4}
-                  value={form.brief}
-                  onChange={(e) => setForm((f) => ({ ...f, brief: e.target.value }))}
-                  className="w-full rounded-lg bg-bg border border-line px-4 py-2.5 text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none transition-colors resize-y"
-                  placeholder="A senior Flutter role on a real-time product — or a freelance app build…"
-                />
-              </div>
+            <h3 className="text-xl font-semibold text-ink mb-2">Get in touch</h3>
+            <p className="text-ink-muted mb-8 max-w-md">
+              For hiring managers, recruiters, and freelance clients. Email or message me on
+              LinkedIn and I'll reply within a day.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Hello Narek')}`}
+                className="px-7 py-3 rounded-lg font-semibold bg-accent text-accent-ink hover:bg-accent-strong transition-colors inline-flex items-center justify-center gap-2"
+              >
+                Email me
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.25" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </a>
+              <a
+                href="https://linkedin.com/in/narek--manukyan"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-7 py-3 rounded-lg font-medium border border-line text-ink hover:border-accent-line hover:text-accent-strong transition-colors inline-flex items-center justify-center gap-2"
+              >
+                Message on LinkedIn
+              </a>
             </div>
-
-            <button
-              type="submit"
-              className="mt-6 w-full sm:w-auto px-7 py-3 rounded-lg font-semibold bg-accent text-accent-ink hover:bg-accent-strong transition-colors inline-flex items-center justify-center gap-2"
-            >
-              Send inquiry
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.25" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </button>
-            <p className="mt-3 text-xs text-ink-faint">Opens your email client, prefilled. Prefer direct? {CONTACT_EMAIL}</p>
-          </motion.form>
+            <p className="mt-4 text-xs text-ink-faint font-mono">{CONTACT_EMAIL}</p>
+          </motion.div>
 
           {/* Direct contact + availability + recruiter path */}
           <motion.div {...FADE_UP} whileInView="animate" initial="initial" viewport={viewportOnce} transition={DEFAULT_TRANSITION} className="space-y-6">
